@@ -1,0 +1,539 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * @ai-context Le Pas Sage Design System - Sophisticated Black/White/Gold palette
+ *             Inspired by minimalist luxury aesthetic from brand logo
+ * @ai-colors
+ *   - Sage Black: Deep black for primary elements
+ *   - Sage White: Pure white for backgrounds
+ *   - Sage Gray Scale: 10-step grayscale for hierarchy
+ *   - Sage Gold: Luxury accent color
+ *   - Sage Green: Subtle natural accent
+ */
+
+:root {
+  /* ===== Le Pas Sage Brand Colors ===== */
+
+  /* Primary - Sage Black (from logo) */
+  --sage-black: 15 15 15;
+  --sage-black-light: 38 38 38;
+
+  /* Sage White */
+  --sage-white: 255 255 255;
+
+  /* Sage Gray Scale - Sophisticated neutrals */
+  --sage-gray-50: 250 250 250;
+  --sage-gray-100: 245 245 245;
+  --sage-gray-200: 229 229 229;
+  --sage-gray-300: 212 212 212;
+  --sage-gray-400: 163 163 163;
+  --sage-gray-500: 115 115 115;
+  --sage-gray-600: 82 82 82;
+  --sage-gray-700: 64 64 64;
+  --sage-gray-800: 38 38 38;
+  --sage-gray-900: 23 23 23;
+
+  /* Sage Gold - Luxury accent */
+  --sage-gold: 191 155 96;
+  --sage-gold-light: 217 191 145;
+  --sage-gold-dark: 165 129 70;
+
+  /* Sage Green - Natural accent */
+  --sage-green: 139 145 136;
+  --sage-green-light: 169 175 166;
+
+  /* ===== Semantic Color Mappings ===== */
+
+  /* Primary - Sage Black */
+  --primary: var(--sage-black);
+  --primary-foreground: var(--sage-white);
+
+  /* Secondary - Mid-tone Gray */
+  --secondary: var(--sage-gray-500);
+  --secondary-foreground: var(--sage-white);
+
+  /* Accent - Sage Gold */
+  --accent: var(--sage-gold);
+  --accent-foreground: var(--sage-white);
+
+  /* Destructive - Understated red */
+  --destructive: 185 28 28;
+  --destructive-foreground: var(--sage-white);
+
+  /* Background and foreground */
+  --background: var(--sage-white);
+  --foreground: var(--sage-black);
+
+  /* Muted - Subtle backgrounds */
+  --muted: var(--sage-gray-100);
+  --muted-foreground: var(--sage-gray-600);
+
+  /* Input */
+  --input: var(--sage-gray-300);
+  --input-foreground: var(--sage-black);
+
+  /* Border */
+  --border: var(--sage-gray-200);
+
+  /* Ring - Focus indicator */
+  --ring: var(--sage-black);
+
+  /* Card */
+  --card: var(--sage-white);
+  --card-foreground: var(--sage-black);
+
+  /* ===== Opacity Modifiers ===== */
+  --opacity-subtle: 0.05;
+  --opacity-light: 0.1;
+  --opacity-medium: 0.2;
+  --opacity-strong: 0.3;
+}
+
+/* Dark mode color scheme */
+.dark {
+  /* Invert primary colors */
+  --primary: var(--sage-white);
+  --primary-foreground: var(--sage-black);
+
+  --secondary: var(--sage-gray-400);
+  --secondary-foreground: var(--sage-black);
+
+  /* Accent stays gold */
+  --accent: var(--sage-gold-light);
+  --accent-foreground: var(--sage-black);
+
+  /* Background and foreground inverted */
+  --background: var(--sage-black);
+  --foreground: var(--sage-white);
+
+  --muted: var(--sage-gray-900);
+  --muted-foreground: var(--sage-gray-400);
+
+  --input: var(--sage-gray-700);
+  --input-foreground: var(--sage-white);
+
+  --border: var(--sage-gray-800);
+
+  --ring: var(--sage-gold);
+
+  --card: var(--sage-gray-900);
+  --card-foreground: var(--sage-white);
+
+  --destructive: 220 38 38;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.011em;
+  }
+}
+
+/* ===== Enhanced Focus States ===== */
+*:focus-visible {
+  outline: 2px solid rgb(var(--ring));
+  outline-offset: 2px;
+  transition: outline-offset 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*:focus-visible:active {
+  outline-offset: 0px;
+}
+
+/* ===== Sophisticated Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--sage-gray-100));
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--sage-gray-400));
+  border-radius: 5px;
+  border: 2px solid rgb(var(--sage-gray-100));
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--sage-gray-600));
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background: rgb(var(--sage-gray-900));
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgb(var(--sage-gray-700));
+  border-color: rgb(var(--sage-gray-900));
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--sage-gray-500));
+}
+
+/* ===== Selection Styles ===== */
+::selection {
+  background: rgb(var(--sage-gold) / 0.3);
+  color: rgb(var(--sage-black));
+}
+
+.dark ::selection {
+  background: rgb(var(--sage-gold) / 0.4);
+  color: rgb(var(--sage-white));
+}
+
+/* ===== Sophisticated Animation System ===== */
+
+/* Easing Functions */
+:root {
+  --ease-elegant: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-luxury: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-sophisticated: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-refined: cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes shimmer-gold {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glow-gold {
+  0%, 100% {
+    box-shadow: 0 0 8px rgb(var(--sage-gold) / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 16px rgb(var(--sage-gold) / 0.5);
+  }
+}
+
+@keyframes fade-in-blur {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* ===== Animation Utility Classes ===== */
+
+.animate-fade-in {
+  animation: fadeIn 0.5s var(--ease-elegant);
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s var(--ease-elegant);
+}
+
+.animate-slide-down {
+  animation: slideDown 0.5s var(--ease-elegant);
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.5s var(--ease-elegant);
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s var(--ease-elegant);
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.4s var(--ease-refined);
+}
+
+.animate-fade-in-blur {
+  animation: fade-in-blur 0.6s var(--ease-elegant);
+}
+
+.animate-shimmer {
+  animation: shimmer 2.5s infinite linear;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.15) 20%,
+    rgba(255, 255, 255, 0.4) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 1000px 100%;
+}
+
+.animate-shimmer-gold {
+  animation: shimmer-gold 3s infinite linear;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(var(--sage-gold) / 0.2) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+}
+
+.animate-pulse-subtle {
+  animation: pulse 3s var(--ease-sophisticated) infinite;
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 1.2s var(--ease-luxury) infinite;
+}
+
+.animate-spin-slow {
+  animation: rotate 4s linear infinite;
+}
+
+.animate-glow-gold {
+  animation: glow-gold 2s ease-in-out infinite;
+}
+
+/* ===== Glassmorphism Utilities ===== */
+.glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.glass-dark {
+  background: rgba(15, 15, 15, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ===== Sophisticated Gradient Utilities ===== */
+.gradient-sage {
+  background: linear-gradient(135deg, rgb(var(--sage-black)) 0%, rgb(var(--sage-gray-900)) 100%);
+}
+
+.gradient-gold {
+  background: linear-gradient(135deg, rgb(var(--sage-gold-dark)) 0%, rgb(var(--sage-gold-light)) 100%);
+}
+
+.gradient-radial-gold {
+  background: radial-gradient(circle at center, rgb(var(--sage-gold) / 0.12) 0%, transparent 65%);
+}
+
+.gradient-radial-black {
+  background: radial-gradient(circle at center, rgb(var(--sage-black) / 0.04) 0%, transparent 70%);
+}
+
+/* ===== Hover Effects ===== */
+.hover-lift {
+  transition: transform 0.3s var(--ease-elegant), box-shadow 0.3s var(--ease-elegant);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+.hover-lift-subtle {
+  transition: transform 0.3s var(--ease-elegant);
+}
+
+.hover-lift-subtle:hover {
+  transform: translateY(-2px);
+}
+
+.hover-scale {
+  transition: transform 0.3s var(--ease-refined);
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+.hover-scale-subtle {
+  transition: transform 0.3s var(--ease-refined);
+}
+
+.hover-scale-subtle:hover {
+  transform: scale(1.01);
+}
+
+/* ===== Focus Ring Improvements ===== */
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-black focus-visible:ring-offset-2 dark:focus-visible:ring-sage-gold;
+}
+
+.focus-ring-gold {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-gold focus-visible:ring-offset-2;
+}
+
+/* ===== Smooth Transitions ===== */
+.transition-smooth {
+  transition: all 0.3s var(--ease-elegant);
+}
+
+.transition-sophisticated {
+  transition: all 0.4s var(--ease-sophisticated);
+}
+
+/* ===== Text Gradients ===== */
+.text-gradient-sage {
+  background: linear-gradient(135deg, rgb(var(--sage-black)) 0%, rgb(var(--sage-gray-700)) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, rgb(var(--sage-gold-dark)) 0%, rgb(var(--sage-gold-light)) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== Stagger Animation ===== */
+.stagger-item {
+  animation-delay: calc(var(--stagger-index, 0) * 0.06s);
+}
+
+/* ===== Luxury Divider ===== */
+.divider-gold {
+  position: relative;
+}
+
+.divider-gold::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgb(var(--sage-gold)) 50%, transparent 100%);
+}
+
+/* ===== Sophisticated Shadows ===== */
+.shadow-elegant {
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.05),
+    0 1px 2px -1px rgb(0 0 0 / 0.05);
+}
+
+.shadow-elegant-lg {
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.06),
+    0 4px 6px -4px rgb(0 0 0 / 0.06);
+}
+
+.shadow-gold {
+  box-shadow: 0 4px 16px rgb(var(--sage-gold) / 0.15);
+}
+
+.shadow-gold-lg {
+  box-shadow: 0 8px 24px rgb(var(--sage-gold) / 0.2);
+}
