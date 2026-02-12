@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/api-client';
+import { apiClient } from '@/services/api';
 import type { SettingsData, UpdateSettingsRequest } from '../types/settings.types';
 
 class SettingsService {

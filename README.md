@@ -20,7 +20,7 @@ Sophisticated content management system for Le Pas Sage e-commerce platform.
 ## Development Server
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Server runs on `http://localhost:3001`

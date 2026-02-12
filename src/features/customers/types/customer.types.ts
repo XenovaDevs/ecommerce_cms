@@ -21,14 +21,6 @@ export interface CustomerFilters {
   per_page?: number;
 }
 
-export interface CustomerListResponse {
-  data: Customer[];
-  total: number;
-  per_page: number;
-  current_page: number;
-  last_page: number;
-}
-
 export interface CustomerOrder {
   id: number;
   order_number: string;

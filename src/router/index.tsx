@@ -7,6 +7,8 @@ import { ProductEditPage } from '@/features/products/pages/ProductEditPage'
 import { OrdersPage } from '@/features/orders/pages/OrdersPage'
 import { OrderDetailPage } from '@/features/orders/pages/OrderDetailPage'
 import CategoriesPage from '@/features/categories/pages/CategoriesPage'
+import { CustomersPage } from '@/features/customers/pages/CustomersPage'
+import { CustomerDetailPage } from '@/features/customers/pages/CustomerDetailPage'
 import { ReportsPage } from '@/features/reports'
 import { SettingsPage } from '@/features/settings'
 import { ShippingPage } from '@/features/shipping'
@@ -55,7 +57,11 @@ const router = createBrowserRouter([
       },
       {
         path: 'customers',
-        element: <div className="p-8 bg-white rounded-lg">Clientes - En construcción</div>,
+        element: <CustomersPage />,
+      },
+      {
+        path: 'customers/:id',
+        element: <CustomerDetailPage />,
       },
       {
         path: 'shipping',

@@ -4,11 +4,12 @@
  * Dependency Inversion: Depends on API client abstraction
  */
 
-import api from '@/lib/api';
+import apiClient from '@/services/api';
+import { API_ENDPOINTS } from '@/services/apiEndpoints';
+import { PaginatedResponse } from '@/types/api.types';
 import {
   Customer,
   CustomerFilters,
-  CustomerListResponse,
   CustomerDetailData,
 } from '../types/customer.types';
 
@@ -17,19 +18,18 @@ import {
  * Follows Single Responsibility: Only handles customer data fetching
  */
 class CustomerService {
-  private readonly basePath = '/admin/customers';
-
   /**
    * Fetch paginated list of customers with optional filters
    * @param filters - Search and pagination filters
    * @returns Promise with customer list and pagination data
    */
-  async list(filters?: CustomerFilters): Promise<CustomerListResponse> {
+  async list(filters?: CustomerFilters): Promise<PaginatedResponse<Customer>> {
     const params = this.buildQueryParams(filters);
-    const response = await api.get<CustomerListResponse>(this.basePath, {
-      params,
-    });
-    return response.data;
+    const { data } = await apiClient.get<PaginatedResponse<Customer>>(
+      API_ENDPOINTS.CUSTOMERS.LIST,
+      { params }
+    );
+    return data;
   }
 
   /**
@@ -38,10 +38,10 @@ class CustomerService {
    * @returns Promise with customer details
    */
   async get(id: number): Promise<CustomerDetailData> {
-    const response = await api.get<CustomerDetailData>(
-      `${this.basePath}/${id}`
+    const { data } = await apiClient.get<CustomerDetailData>(
+      API_ENDPOINTS.CUSTOMERS.GET(id)
     );
-    return response.data;
+    return data;
   }
 
   /**

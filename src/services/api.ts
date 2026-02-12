@@ -23,24 +23,12 @@ export function getAccessToken(): string | undefined {
 }
 
 /**
- * Get refresh token from cookies
- */
-export function getRefreshToken(): string | undefined {
-  return Cookies.get(TOKEN_KEYS.REFRESH_TOKEN)
-}
-
-/**
  * Set auth tokens in cookies
  */
-export function setAuthTokens(accessToken: string, refreshToken: string): void {
+export function setAuthTokens(accessToken: string): void {
   const isSecure = window.location.protocol === 'https:'
   Cookies.set(TOKEN_KEYS.ACCESS_TOKEN, accessToken, {
-    expires: 7, // 7 days
-    secure: isSecure,
-    sameSite: 'strict',
-  })
-  Cookies.set(TOKEN_KEYS.REFRESH_TOKEN, refreshToken, {
-    expires: 30, // 30 days
+    expires: 1 / 96, // 15 minutes
     secure: isSecure,
     sameSite: 'strict',
   })
@@ -51,7 +39,6 @@ export function setAuthTokens(accessToken: string, refreshToken: string): void {
  */
 export function clearAuthTokens(): void {
   Cookies.remove(TOKEN_KEYS.ACCESS_TOKEN)
-  Cookies.remove(TOKEN_KEYS.REFRESH_TOKEN)
 }
 
 /**
@@ -123,9 +110,15 @@ apiClient.interceptors.response.use(
   },
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
+    const requestUrl = originalRequest?.url || ''
 
     // If error is 401 and we haven't tried to refresh yet
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401
+      && !originalRequest._retry
+      && !requestUrl.includes('/auth/refresh')
+      && !requestUrl.includes('/auth/login')
+    ) {
       if (isRefreshing) {
         // If already refreshing, queue this request
         return new Promise((resolve, reject) => {
@@ -143,28 +136,33 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true
       isRefreshing = true
 
-      const refreshToken = getRefreshToken()
-
-      if (!refreshToken) {
-        clearAuthTokens()
-        window.location.href = '/login'
-        return Promise.reject(error)
-      }
-
       try {
-        const { data: responseData } = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-          refresh_token: refreshToken,
-        })
+        const { data: responseData } = await axios.post(
+          `${API_BASE_URL}/auth/refresh`,
+          {},
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+          }
+        )
 
-        const { access_token, refresh_token: newRefreshToken } = responseData.data || responseData
+        const payload = responseData.data || responseData
+        const accessToken = payload.access_token
 
-        setAuthTokens(access_token, newRefreshToken)
-
-        if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${access_token}`
+        if (!accessToken) {
+          throw new Error('Refresh did not return access_token')
         }
 
-        processQueue(null, access_token)
+        setAuthTokens(accessToken)
+
+        if (originalRequest.headers) {
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`
+        }
+
+        processQueue(null, accessToken)
 
         return apiClient(originalRequest)
       } catch (refreshError) {

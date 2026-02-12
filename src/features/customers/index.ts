@@ -7,7 +7,6 @@
 export type {
   Customer,
   CustomerFilters,
-  CustomerListResponse,
   CustomerOrder,
   CustomerDetailData,
 } from './types/customer.types';

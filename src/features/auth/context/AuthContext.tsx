@@ -1,7 +1,8 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react'
 import { authService } from '../services/auth.service'
 import { AuthContextType, LoginCredentials, AuthUser } from '../types/auth.types'
-import { getAccessToken } from '@/services/api'
+
+const STAFF_ROLES = new Set(['super_admin', 'admin', 'manager', 'support'])
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
@@ -12,15 +13,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const token = getAccessToken()
+        try {
+          await authService.refreshAccessToken()
+          const currentUser = await authService.getCurrentUser()
 
-        if (token) {
-          try {
-            const currentUser = await authService.getCurrentUser()
-            setUser(currentUser)
-          } catch (error) {
-            authService.clearTokens()
+          if (!STAFF_ROLES.has(currentUser.role)) {
+            await authService.logout()
+            setUser(null)
+            return
           }
+
+          setUser(currentUser)
+        } catch (error) {
+          authService.clearTokens()
         }
       } catch (error) {
         console.error('Error initializing auth:', error)
@@ -34,7 +39,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (credentials: LoginCredentials) => {
     const response = await authService.login(credentials)
-    authService.setTokens(response.access_token, response.refresh_token)
+    authService.setTokens(response.access_token)
+
+    if (!STAFF_ROLES.has(response.user.role)) {
+      await authService.logout()
+      throw new Error('Unauthorized role for CMS access')
+    }
+
     setUser(response.user)
   }, [])
 

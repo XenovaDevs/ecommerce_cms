@@ -6,7 +6,7 @@
  * Follows DIP: Depends on axios abstraction, not concrete HTTP implementation.
  */
 
-import api from '@/lib/axios';
+import api from '@/services/api';
 import type {
   Shipment,
   CreateShipmentData,

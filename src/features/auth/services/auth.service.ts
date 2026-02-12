@@ -21,8 +21,13 @@ export const authService = {
     return data
   },
 
-  setTokens(accessToken: string, refreshToken: string): void {
-    setAuthTokens(accessToken, refreshToken)
+  async refreshAccessToken(): Promise<void> {
+    const { data } = await apiClient.post<any>(API_ENDPOINTS.AUTH.REFRESH, {})
+    setAuthTokens(data.access_token)
+  },
+
+  setTokens(accessToken: string): void {
+    setAuthTokens(accessToken)
   },
 
   clearTokens(): void {

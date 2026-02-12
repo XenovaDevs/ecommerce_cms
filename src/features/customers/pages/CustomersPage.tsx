@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Pagination } from '@/components/ui/pagination';
+import { Pagination } from '@/components/ui/Pagination/Pagination';
 import { CustomerFilters } from '../components/CustomerFilters';
 import { CustomerList } from '../components/CustomerList';
 import { useCustomers } from '../hooks/useCustomers';
@@ -74,10 +74,12 @@ export function CustomersPage() {
           ) : data ? (
             <>
               <CustomerList customers={data.data} />
-              {data.last_page > 1 && (
+              {data.meta.last_page > 1 && (
                 <Pagination
-                  currentPage={data.current_page}
-                  totalPages={data.last_page}
+                  currentPage={data.meta.current_page}
+                  totalPages={data.meta.last_page}
+                  totalItems={data.meta.total}
+                  pageSize={filters.per_page || 10}
                   onPageChange={handlePageChange}
                 />
               )}
