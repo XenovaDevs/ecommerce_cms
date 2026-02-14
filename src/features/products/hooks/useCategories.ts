@@ -19,11 +19,14 @@ export function useCategories() {
   return useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const { data } = await apiClient.get<{ data: Category[] }>(
+      const { data } = await apiClient.get<Category[] | { data?: Category[] }>(
         API_ENDPOINTS.CATEGORIES.LIST,
         { params: { per_page: 100 } } // Get all categories
       )
-      return data.data
+      if (Array.isArray(data)) {
+        return data
+      }
+      return data.data ?? []
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
   })

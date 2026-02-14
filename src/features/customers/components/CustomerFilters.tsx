@@ -5,20 +5,20 @@
  */
 
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Search } from 'lucide-react';
+import { Select, type SelectOption } from '@/components/ui/Select/Select';
 import { CustomerFilters as CustomerFiltersType } from '../types/customer.types';
 
 interface CustomerFiltersProps {
   filters: CustomerFiltersType;
   onFiltersChange: (filters: CustomerFiltersType) => void;
 }
+
+const STATUS_OPTIONS: SelectOption[] = [
+  { value: 'all', label: 'Todos' },
+  { value: 'active', label: 'Activos' },
+  { value: 'inactive', label: 'Inactivos' },
+];
 
 /**
  * Filter controls for customer list
@@ -59,23 +59,19 @@ export function CustomerFilters({
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           type="text"
-          placeholder="Buscar por nombre, email o teléfono..."
+          placeholder="Buscar por nombre, email o telefono..."
           value={filters.search || ''}
           onChange={(e) => handleSearchChange(e.target.value)}
           className="pl-9"
         />
       </div>
 
-      <Select value={getStatusValue()} onValueChange={handleStatusChange}>
-        <SelectTrigger className="w-full sm:w-[180px]">
-          <SelectValue placeholder="Estado" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Todos</SelectItem>
-          <SelectItem value="active">Activos</SelectItem>
-          <SelectItem value="inactive">Inactivos</SelectItem>
-        </SelectContent>
-      </Select>
+      <Select
+        options={STATUS_OPTIONS}
+        value={getStatusValue()}
+        onChange={(e) => handleStatusChange(e.target.value)}
+        className="w-full sm:w-[180px]"
+      />
     </div>
   );
 }

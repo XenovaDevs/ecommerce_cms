@@ -1,6 +1,16 @@
 import { z } from 'zod'
 
 /**
+ * Preprocessor that converts NaN/empty values to undefined
+ * Fixes: empty number inputs with valueAsNumber produce NaN
+ */
+const optionalNumber = (schema: z.ZodTypeAny) =>
+  z.preprocess(
+    (val) => (val === '' || val === null || val === undefined || Number.isNaN(val as number) ? undefined : val),
+    schema
+  )
+
+/**
  * Base product validation schema
  * Follows Single Responsibility Principle - handles only validation logic
  */
@@ -37,23 +47,17 @@ const baseProductSchema = z.object({
     .positive('El precio debe ser mayor a 0')
     .max(999999.99, 'El precio es demasiado alto'),
 
-  sale_price: z
-    .number()
-    .positive('El precio de oferta debe ser mayor a 0')
-    .optional()
-    .nullable(),
+  sale_price: optionalNumber(
+    z.number().positive('El precio de oferta debe ser mayor a 0').optional().nullable()
+  ),
 
-  compare_at_price: z
-    .number()
-    .positive('El precio de comparación debe ser mayor a 0')
-    .optional()
-    .nullable(),
+  compare_at_price: optionalNumber(
+    z.number().positive('El precio de comparación debe ser mayor a 0').optional().nullable()
+  ),
 
-  cost_price: z
-    .number()
-    .positive('El costo debe ser mayor a 0')
-    .optional()
-    .nullable(),
+  cost_price: optionalNumber(
+    z.number().positive('El costo debe ser mayor a 0').optional().nullable()
+  ),
 
   sku: z
     .string()
@@ -75,19 +79,13 @@ const baseProductSchema = z.object({
     .int('El stock debe ser un número entero')
     .min(0, 'El stock no puede ser negativo'),
 
-  low_stock_threshold: z
-    .number()
-    .int('El umbral debe ser un número entero')
-    .min(0, 'El umbral no puede ser negativo')
-    .optional()
-    .nullable(),
+  low_stock_threshold: optionalNumber(
+    z.number().int('El umbral debe ser un número entero').min(0, 'El umbral no puede ser negativo').optional().nullable()
+  ),
 
-  category_id: z
-    .number()
-    .int('El ID de categoría debe ser un número entero')
-    .positive('El ID de categoría debe ser positivo')
-    .optional()
-    .nullable(),
+  category_id: optionalNumber(
+    z.number().int('El ID de categoría debe ser un número entero').positive('El ID de categoría debe ser positivo').optional().nullable()
+  ),
 
   is_featured: z.boolean().optional().default(false),
 
@@ -95,11 +93,9 @@ const baseProductSchema = z.object({
 
   track_stock: z.boolean().optional().default(true),
 
-  weight: z
-    .number()
-    .positive('El peso debe ser mayor a 0')
-    .optional()
-    .nullable(),
+  weight: optionalNumber(
+    z.number().positive('El peso debe ser mayor a 0').optional().nullable()
+  ),
 })
 
 /**

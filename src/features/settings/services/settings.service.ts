@@ -1,17 +1,16 @@
 import { apiClient } from '@/services/api';
+import { API_ENDPOINTS } from '@/services/apiEndpoints';
 import type { SettingsData, UpdateSettingsRequest } from '../types/settings.types';
 
 class SettingsService {
-  private readonly basePath = '/settings';
-
   async getSettings(): Promise<SettingsData> {
-    const response = await apiClient.get<SettingsData>(this.basePath);
+    const response = await apiClient.get<SettingsData>(API_ENDPOINTS.SETTINGS.GET);
     return response.data;
   }
 
   async updateSettings(data: UpdateSettingsRequest): Promise<SettingsData> {
     const response = await apiClient.put<SettingsData>(
-      `${this.basePath}/${data.group}`,
+      `${API_ENDPOINTS.SETTINGS.GET}/${data.group}`,
       data.settings
     );
     return response.data;

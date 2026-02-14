@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react'
 import { authService } from '../services/auth.service'
 import { AuthContextType, LoginCredentials, AuthUser } from '../types/auth.types'
+import { getAccessToken } from '@/services/api'
 
 const STAFF_ROLES = new Set(['super_admin', 'admin', 'manager', 'support'])
 
@@ -13,22 +14,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        try {
-          await authService.refreshAccessToken()
-          const currentUser = await authService.getCurrentUser()
+        const hasAccessToken = !!getAccessToken()
+        let currentUser: AuthUser | null = null
 
-          if (!STAFF_ROLES.has(currentUser.role)) {
-            await authService.logout()
-            setUser(null)
-            return
+        if (hasAccessToken) {
+          try {
+            currentUser = await authService.getCurrentUser()
+          } catch {
+            currentUser = null
           }
-
-          setUser(currentUser)
-        } catch (error) {
-          authService.clearTokens()
         }
+
+        if (!currentUser) {
+          await authService.refreshAccessToken()
+          currentUser = await authService.getCurrentUser()
+        }
+
+        if (!STAFF_ROLES.has(currentUser.role)) {
+          await authService.logout()
+          setUser(null)
+          return
+        }
+
+        setUser(currentUser)
       } catch (error) {
-        console.error('Error initializing auth:', error)
+        authService.clearTokens()
+        setUser(null)
       } finally {
         setIsLoading(false)
       }

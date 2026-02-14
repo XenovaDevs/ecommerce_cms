@@ -7,6 +7,7 @@
  */
 
 import api from '@/services/api';
+import { API_ENDPOINTS } from '@/services/apiEndpoints';
 import type {
   Shipment,
   CreateShipmentData,
@@ -33,25 +34,31 @@ interface IShippingService {
  * Uses dependency injection via axios instance.
  */
 class ShippingService implements IShippingService {
-  private readonly basePath = '/admin/shipping';
+  private normalizeShipmentList(payload: any, fallbackPage: number, fallbackPerPage: number): ShipmentListResponse {
+    if (payload && Array.isArray(payload.data) && typeof payload.total === 'number') {
+      return payload as ShipmentListResponse;
+    }
+
+    const list = Array.isArray(payload) ? payload : payload?.data ?? [];
+    return {
+      data: Array.isArray(list) ? list : [],
+      total: payload?.meta?.total ?? payload?.total ?? 0,
+      page: payload?.meta?.current_page ?? payload?.page ?? fallbackPage,
+      per_page: payload?.meta?.per_page ?? payload?.per_page ?? fallbackPerPage,
+    };
+  }
 
   /**
    * List all shipments with pagination
-   *
-   * @param page - Page number (default: 1)
-   * @param perPage - Items per page (default: 10)
-   * @returns Promise with shipment list and metadata
-   * @throws Error if API endpoint is not available
    */
   async list(page = 1, perPage = 10): Promise<ShipmentListResponse> {
     try {
-      const response = await api.get<ShipmentListResponse>(this.basePath, {
+      const response = await api.get<ShipmentListResponse>(API_ENDPOINTS.SHIPPING.LIST, {
         params: { page, per_page: perPage }
       });
-      return response.data;
+      return this.normalizeShipmentList(response.data, page, perPage);
     } catch (error: any) {
       if (error.response?.status === 404) {
-        // Backend endpoint not yet implemented
         throw new Error('Shipping API endpoint is not available yet. Backend integration in progress.');
       }
       throw this.handleError(error, 'Failed to fetch shipments');
@@ -60,14 +67,10 @@ class ShippingService implements IShippingService {
 
   /**
    * Create a new shipment for an order
-   *
-   * @param data - Shipment creation data
-   * @returns Promise with created shipment
-   * @throws Error if validation fails or API is unavailable
    */
   async create(data: CreateShipmentData): Promise<Shipment> {
     try {
-      const response = await api.post<Shipment>(this.basePath, data);
+      const response = await api.post<Shipment>(API_ENDPOINTS.SHIPPING.CREATE, data);
       return response.data;
     } catch (error: any) {
       if (error.response?.status === 404) {
@@ -82,14 +85,10 @@ class ShippingService implements IShippingService {
 
   /**
    * Track a shipment by ID
-   *
-   * @param id - Shipment ID
-   * @returns Promise with tracking information and events
-   * @throws Error if shipment not found or API unavailable
    */
   async track(id: number): Promise<TrackingInfo> {
     try {
-      const response = await api.get<TrackingInfo>(`${this.basePath}/${id}/track`);
+      const response = await api.get<TrackingInfo>(API_ENDPOINTS.SHIPPING.TRACK(id));
       return response.data;
     } catch (error: any) {
       if (error.response?.status === 404) {
@@ -101,17 +100,16 @@ class ShippingService implements IShippingService {
 
   /**
    * Get orders available for shipment creation
-   * Orders without existing shipments
-   *
-   * @returns Promise with list of available orders
    */
   async getAvailableOrders(): Promise<OrderForShipment[]> {
     try {
-      const response = await api.get<OrderForShipment[]>(`${this.basePath}/available-orders`);
-      return response.data;
+      const response = await api.get<OrderForShipment[]>(`${API_ENDPOINTS.SHIPPING.LIST}/available-orders`);
+      if (Array.isArray(response.data)) {
+        return response.data;
+      }
+      return (response.data as any)?.data ?? [];
     } catch (error: any) {
       if (error.response?.status === 404) {
-        // Fallback: return empty array if endpoint doesn't exist yet
         console.warn('Available orders endpoint not implemented yet');
         return [];
       }
@@ -121,11 +119,6 @@ class ShippingService implements IShippingService {
 
   /**
    * Centralized error handler
-   * Provides consistent error messages across service methods
-   *
-   * @param error - Original error
-   * @param defaultMessage - Default message if error details unavailable
-   * @returns Error with user-friendly message
    */
   private handleError(error: any, defaultMessage: string): Error {
     const message = error.response?.data?.message || error.message || defaultMessage;
@@ -133,7 +126,7 @@ class ShippingService implements IShippingService {
   }
 }
 
-// Export singleton instance (follows Factory pattern)
+// Export singleton instance
 export const shippingService = new ShippingService();
 
 // Export type for testing and mocking
