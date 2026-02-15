@@ -45,6 +45,7 @@ export interface OrderItem {
 
 export interface ShippingAddress {
   name: string
+  email?: string
   address_line_1: string
   address_line_2?: string
   city: string

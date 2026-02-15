@@ -1,25 +1,10 @@
-import { useState } from 'react'
-import { X, Loader2 } from 'lucide-react'
-import { FileUpload } from '@/components/ui/FileUpload/FileUpload'
+import { useState, useRef } from 'react'
+import { X, Loader2, Upload } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import apiClient from '@/services/api'
 import { API_ENDPOINTS } from '@/services/apiEndpoints'
 import { ProductImage } from '../types/product.types'
 import { useToast } from '@/store/ToastContext'
-
-/**
- * ImageUploader Component
- *
- * Single Responsibility: Handles product image upload and management
- * Interface Segregation: Clean props interface with minimal dependencies
- * Dependency Inversion: Depends on API abstraction (apiClient)
- *
- * Features:
- * - Multiple image upload via drag & drop
- * - Preview existing product images
- * - Delete images from product
- * - Upload progress and error handling
- */
 
 interface ImageUploaderProps {
   productId?: number
@@ -39,26 +24,29 @@ export function ImageUploader({
   const [images, setImages] = useState<ProductImage[]>(existingImages)
   const [isUploading, setIsUploading] = useState(false)
   const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set())
+  const inputRef = useRef<HTMLInputElement>(null)
   const { showToast } = useToast()
 
-  /**
-   * Handles file upload to server
-   * Single Responsibility: Only handles upload logic
-   */
-  const handleUpload = async (files: File[]) => {
-    if (!productId) {
-      throw new Error('Product ID is required to upload images')
-    }
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length === 0 || !productId) return
 
-    if (images.length + files.length > maxImages) {
-      throw new Error(`Maximum ${maxImages} images allowed`)
+    // Reset input so the same file can be selected again
+    e.target.value = ''
+
+    const fileArray = Array.from(files)
+
+    if (images.length + fileArray.length > maxImages) {
+      showToast(`Máximo ${maxImages} imágenes permitidas`, 'error')
+      return
     }
 
     setIsUploading(true)
 
     try {
-      // Upload images one by one
-      const uploadPromises = files.map(async (file) => {
+      const uploadedImages: ProductImage[] = []
+
+      for (const file of fileArray) {
         const formData = new FormData()
         formData.append('image', file)
 
@@ -71,33 +59,23 @@ export function ImageUploader({
             },
           }
         )
-        return data
-      })
+        uploadedImages.push(data)
+      }
 
-      const uploadedImages = await Promise.all(uploadPromises)
       const updatedImages = [...images, ...uploadedImages]
-
       setImages(updatedImages)
       onImagesChange?.(updatedImages)
       showToast('Imágenes subidas exitosamente', 'success')
     } catch (error) {
       console.error('Error uploading images:', error)
       showToast('Error al subir imágenes', 'error')
-      throw error
     } finally {
       setIsUploading(false)
     }
   }
 
-  /**
-   * Handles image deletion from server
-   * Single Responsibility: Only handles deletion logic
-   */
   const handleDelete = async (imageId: number) => {
-    if (!productId) {
-      showToast('No se puede eliminar la imagen sin un producto asociado', 'error')
-      return
-    }
+    if (!productId) return
 
     setDeletingIds((prev) => new Set(prev).add(imageId))
 
@@ -171,15 +149,43 @@ export function ImageUploader({
       {/* Upload Area */}
       {remainingSlots > 0 && (
         <div>
-          <FileUpload
+          <input
+            ref={inputRef}
+            type="file"
             accept="image/*"
-            maxSize={5 * 1024 * 1024} // 5MB
-            maxFiles={remainingSlots}
             multiple
-            onUpload={productId ? handleUpload : undefined}
-            showPreview
-            disabled={disabled || isUploading}
+            onChange={handleFileSelect}
+            disabled={disabled || isUploading || !productId}
+            className="sr-only"
           />
+
+          <div
+            onClick={() => inputRef.current?.click()}
+            className={cn(
+              'relative border-2 border-dashed rounded-xl p-8 transition-all',
+              'flex flex-col items-center justify-center gap-3',
+              'cursor-pointer hover:border-sage-gold',
+              (disabled || isUploading || !productId) && 'opacity-50 cursor-not-allowed hover:border-sage-gray-300',
+              'border-sage-gray-300'
+            )}
+          >
+            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gold-pale">
+              {isUploading ? (
+                <Loader2 className="w-6 h-6 text-sage-gold animate-spin" />
+              ) : (
+                <Upload className="w-6 h-6 text-sage-gold" />
+              )}
+            </div>
+
+            <div className="text-center">
+              <p className="text-sm font-medium text-sage-black">
+                {isUploading ? 'Subiendo imágenes...' : 'Arrastrá o hacé click para subir'}
+              </p>
+              <p className="text-xs text-sage-gray-600 mt-1">
+                Máx. 5MB por imagen
+              </p>
+            </div>
+          </div>
 
           {!productId && (
             <p className="mt-2 text-xs text-sage-slate">

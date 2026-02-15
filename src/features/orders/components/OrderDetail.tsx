@@ -144,7 +144,7 @@ export function OrderDetail({ order }: OrderDetailProps) {
           </div>
           <div>
             <dt className="text-sm font-medium text-gray-500">Email</dt>
-            <dd className="mt-1 text-sm text-gray-900">{customer?.email ?? 'No email'}</dd>
+            <dd className="mt-1 text-sm text-gray-900">{customer?.email ?? order.shipping_address?.email ?? 'No email'}</dd>
           </div>
           {customer?.phone && (
             <div>
