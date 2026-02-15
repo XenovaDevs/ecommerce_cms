@@ -65,7 +65,7 @@ export interface OrderStatusHistory {
 export interface Order {
   id: number
   order_number: string
-  customer: OrderCustomer
+  customer: OrderCustomer | null
   items: OrderItem[]
   subtotal: number
   shipping_cost: number

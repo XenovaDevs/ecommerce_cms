@@ -19,6 +19,7 @@ export function OrderDetail({ order }: OrderDetailProps) {
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus>(order.status)
   const [notes, setNotes] = useState('')
   const [showStatusUpdate, setShowStatusUpdate] = useState(false)
+  const customer = order.customer
 
   const updateStatusMutation = useUpdateOrderStatus()
 
@@ -139,16 +140,16 @@ export function OrderDetail({ order }: OrderDetailProps) {
         <dl className="grid grid-cols-1 gap-4">
           <div>
             <dt className="text-sm font-medium text-gray-500">Name</dt>
-            <dd className="mt-1 text-sm text-gray-900">{order.customer.name}</dd>
+            <dd className="mt-1 text-sm text-gray-900">{customer?.name ?? 'Guest customer'}</dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-gray-500">Email</dt>
-            <dd className="mt-1 text-sm text-gray-900">{order.customer.email}</dd>
+            <dd className="mt-1 text-sm text-gray-900">{customer?.email ?? 'No email'}</dd>
           </div>
-          {order.customer.phone && (
+          {customer?.phone && (
             <div>
               <dt className="text-sm font-medium text-gray-500">Phone</dt>
-              <dd className="mt-1 text-sm text-gray-900">{order.customer.phone}</dd>
+              <dd className="mt-1 text-sm text-gray-900">{customer.phone}</dd>
             </div>
           )}
         </dl>
