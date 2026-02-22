@@ -7,7 +7,6 @@ import {
   expectImplementedEndpoint,
   getFirstCustomerId,
   getFirstOrderId,
-  getFirstProductId,
   loginAsAdmin,
   newApiContext,
   readJson,
@@ -24,7 +23,6 @@ function expectEndpointReachable(response: { status: () => number }, endpointNam
 test.describe('CMS API contract coverage', () => {
   let adminApi: ApiClient | null = null;
   let cleanup: CleanupRegistry | null = null;
-  let firstProductId: number | null = null;
   let firstOrderId: number | null = null;
   let firstCustomerId: number | null = null;
 
@@ -33,7 +31,6 @@ test.describe('CMS API contract coverage', () => {
     adminApi = auth.api;
     cleanup = new CleanupRegistry();
 
-    firstProductId = await getFirstProductId(adminApi);
     firstOrderId = await getFirstOrderId(adminApi);
     firstCustomerId = await getFirstCustomerId(adminApi);
   });
@@ -168,7 +165,7 @@ test.describe('CMS API contract coverage', () => {
     expectImplementedEndpoint(uploadByUrlRes, 'PRODUCTS.UPLOAD_IMAGES');
     expect(uploadByUrlRes.status()).toBeLessThan(500);
 
-    const uploadedProduct = unwrapData<any>(await readJson(uploadByUrlRes));
+    const uploadedProduct = unwrapData<{ images?: Array<{ id?: number }> }>(await readJson(uploadByUrlRes));
     const imageId = uploadedProduct?.images?.[0]?.id;
     if (imageId) {
       const deleteImageRes = await adminApi!.delete(API_ENDPOINTS.PRODUCTS.DELETE_IMAGE(created.id, imageId));
@@ -204,7 +201,7 @@ test.describe('CMS API contract coverage', () => {
     const getRes = await adminApi!.get(API_ENDPOINTS.ORDERS.GET(targetOrderId));
     expectEndpointReachable(getRes, 'ORDERS.GET');
 
-    const orderBody = unwrapData<any>(await readJson(getRes));
+    const orderBody = unwrapData<{ status?: string }>(await readJson(getRes));
     const currentStatus = orderBody?.status || 'pending';
 
     const updateRes = await adminApi!.put(API_ENDPOINTS.ORDERS.UPDATE_STATUS(targetOrderId), {
@@ -318,7 +315,7 @@ test.describe('CMS API contract coverage', () => {
     expectImplementedEndpoint(createRes, 'SHIPPING.CREATE');
     expect(createRes.status()).toBeLessThan(500);
 
-    const createdShipment = unwrapData<any>(await readJson(createRes));
+    const createdShipment = unwrapData<{ id?: number }>(await readJson(createRes));
     const trackingId = createdShipment?.id || 1;
 
     const trackingRes = await adminApi!.get(API_ENDPOINTS.SHIPPING.TRACK(trackingId));
@@ -361,8 +358,8 @@ test.describe('CMS API contract coverage', () => {
     expect(productsRes.status()).toBeLessThan(500);
     expect(categoriesRes.status()).toBeLessThan(500);
 
-    const productList = unwrapList<any>(await readJson(productsRes));
-    const categoryList = unwrapList<any>(await readJson(categoriesRes));
+    const productList = unwrapList<{ id: number }>(await readJson(productsRes));
+    const categoryList = unwrapList<{ id: number }>(await readJson(categoriesRes));
     expect(productList.length).toBeGreaterThan(0);
     expect(categoryList.length).toBeGreaterThan(0);
   });

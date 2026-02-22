@@ -12,7 +12,7 @@ export type {
   CreateShipmentData,
   ShippingAddress,
   TrackingEvent,
-  TrackingInfo,
+  TrackingInfo as ShipmentTrackingInfo,
   OrderForShipment,
   ShipmentListResponse,
 } from './types/shipping.types';

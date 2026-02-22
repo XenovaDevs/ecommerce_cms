@@ -19,7 +19,7 @@ export { useCustomers } from './hooks/useCustomers';
 export { useCustomer } from './hooks/useCustomer';
 
 // Components
-export { CustomerFilters } from './components/CustomerFilters';
+export { CustomerFilters as CustomerFiltersComponent } from './components/CustomerFilters';
 export { CustomerList } from './components/CustomerList';
 export { CustomerDetail } from './components/CustomerDetail';
 

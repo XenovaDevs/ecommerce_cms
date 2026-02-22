@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Save, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button/Button'
@@ -51,7 +51,7 @@ export function ProductForm({
     control,
     formState: { errors },
   } = useForm<ProductFormData>({
-    resolver: zodResolver(createProductSchema),
+    resolver: zodResolver(createProductSchema) as Resolver<ProductFormData>,
     defaultValues: product
       ? {
           name: product.name,

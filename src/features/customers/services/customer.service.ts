@@ -17,6 +17,8 @@ import {
  * Service class for customer operations
  * Follows Single Responsibility: Only handles customer data fetching
  */
+type CustomerQueryParams = Record<string, string | number>;
+
 class CustomerService {
   /**
    * Fetch paginated list of customers with optional filters
@@ -48,10 +50,10 @@ class CustomerService {
    * Build query parameters from filters
    * Private method following clean code principles
    */
-  private buildQueryParams(filters?: CustomerFilters): Record<string, any> {
+  private buildQueryParams(filters?: CustomerFilters): CustomerQueryParams {
     if (!filters) return {};
 
-    const params: Record<string, any> = {};
+    const params: CustomerQueryParams = {};
 
     if (filters.search) {
       params.search = filters.search;

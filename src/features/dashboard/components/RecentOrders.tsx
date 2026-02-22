@@ -17,14 +17,14 @@ interface RecentOrdersProps {
 /**
  * Map order status to badge variant
  */
-function getStatusVariant(status: string): 'default' | 'success' | 'warning' | 'error' | 'info' {
-  const statusMap: Record<string, 'default' | 'success' | 'warning' | 'error' | 'info'> = {
+function getStatusVariant(status: string): 'default' | 'success' | 'warning' | 'danger' | 'info' {
+  const statusMap: Record<string, 'default' | 'success' | 'warning' | 'danger' | 'info'> = {
     pending: 'warning',
     processing: 'info',
     shipped: 'info',
     delivered: 'success',
-    cancelled: 'error',
-    refunded: 'error',
+    cancelled: 'danger',
+    refunded: 'danger',
   }
 
   return statusMap[status.toLowerCase()] || 'default'

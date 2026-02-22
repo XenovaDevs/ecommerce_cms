@@ -80,7 +80,7 @@ export function ProductsPage() {
     setPage(1) // Reset to first page on filter change
   }
 
-  const columns: Column[] = [
+  const columns: Column<Product>[] = [
     {
       key: 'name',
       header: 'Producto',
@@ -116,23 +116,27 @@ export function ProductsPage() {
       key: 'price',
       header: 'Precio',
       sortable: true,
-      render: (price) => (
-        <span className="font-medium text-sage-black">
-          {formatCurrency(price)}
-        </span>
-      ),
+      render: (price) => {
+        const numericPrice = typeof price === 'number' ? price : Number(price ?? 0)
+        return (
+          <span className="font-medium text-sage-black">
+            {formatCurrency(numericPrice)}
+          </span>
+        )
+      },
     },
     {
       key: 'stock',
       header: 'Stock',
       sortable: true,
-      render: (stock: number, product: Product) => {
+      render: (stock, product) => {
+        const numericStock = typeof stock === 'number' ? stock : Number(stock ?? 0)
         const isLow =
-          product.low_stock_threshold && stock <= product.low_stock_threshold
+          product.low_stock_threshold && numericStock <= product.low_stock_threshold
 
         return (
-          <Badge variant={stock > 10 ? 'success' : isLow ? 'warning' : 'danger'}>
-            {stock} unidades
+          <Badge variant={numericStock > 10 ? 'success' : isLow ? 'warning' : 'danger'}>
+            {numericStock} unidades
           </Badge>
         )
       },
@@ -140,11 +144,14 @@ export function ProductsPage() {
     {
       key: 'is_active',
       header: 'Estado',
-      render: (isActive: boolean) => (
-        <Badge variant={isActive ? 'success' : 'default'}>
-          {isActive ? 'Activo' : 'Inactivo'}
-        </Badge>
-      ),
+      render: (isActive) => {
+        const active = Boolean(isActive)
+        return (
+          <Badge variant={active ? 'success' : 'default'}>
+            {active ? 'Activo' : 'Inactivo'}
+          </Badge>
+        )
+      },
     },
     {
       key: 'actions',

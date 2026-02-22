@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 const Breadcrumb = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
   ({ className, ...props }, ref) => (
-    <nav ref={ref as any} className={cn('flex', className)} {...props} />
+    <nav ref={ref} className={cn('flex', className)} {...props} />
   )
 )
 Breadcrumb.displayName = 'Breadcrumb'

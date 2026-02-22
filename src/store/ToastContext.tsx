@@ -1,5 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, ReactNode } from 'react'
-import { useToast as useToastHook, Toast, ToastType } from '@/hooks/useToast'
+import { useToast as useToastHook, ToastType } from '@/hooks/useToast'
 import { X, CheckCircle, XCircle, Info, AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 

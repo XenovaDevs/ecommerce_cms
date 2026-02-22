@@ -6,7 +6,7 @@
  * Follows ISP: Uses focused hooks for specific data needs.
  */
 
-import React, { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useCreateShipment, useAvailableOrders } from '../hooks';
 import type { CreateShipmentData, ShippingAddress } from '../types/shipping.types';
 
@@ -20,15 +20,7 @@ interface CreateShipmentFormProps {
 /**
  * Form validation errors
  */
-interface FormErrors {
-  order_id?: string;
-  street?: string;
-  number?: string;
-  city?: string;
-  state?: string;
-  postal_code?: string;
-  country?: string;
-}
+type FormErrors = Partial<Record<keyof ShippingAddress | 'order_id', string>>;
 
 /**
  * Initial address state
@@ -115,7 +107,7 @@ export function CreateShipmentForm({ onSuccess }: CreateShipmentFormProps): JSX.
   /**
    * Handle form submission
    */
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setSuccessMessage('');
 

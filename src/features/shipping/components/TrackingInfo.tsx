@@ -6,7 +6,6 @@
  * Follows OCP: Extensible through props without modification.
  */
 
-import React from 'react';
 import { useTrackingInfo } from '../hooks';
 import { ShippingStatus } from '../types/shipping.types';
 import type { TrackingEvent } from '../types/shipping.types';

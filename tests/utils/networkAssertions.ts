@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Page, type Response, type Request, type ConsoleMessage } from '@playwright/test';
 import { E2E_ENV } from './env';
 
 type IssueType = 'http' | 'failed-request' | 'console';
@@ -28,7 +28,7 @@ export function attachNetworkMonitor(page: Page): NetworkMonitor {
   const isExternalFontRequest = (url: string): boolean =>
     url.includes('fonts.gstatic.com') || url.includes('fonts.googleapis.com');
 
-  const onResponse = (response: any) => {
+  const onResponse = (response: Response) => {
     const url = response.url();
     const status = response.status();
     const isApi = url.includes('/api/v1/');
@@ -43,7 +43,7 @@ export function attachNetworkMonitor(page: Page): NetworkMonitor {
     }
   };
 
-  const onFailed = (request: any) => {
+  const onFailed = (request: Request) => {
     const url = request.url();
     const errorText = request.failure()?.errorText || 'requestfailed';
     if (url.startsWith('data:')) {
@@ -62,7 +62,7 @@ export function attachNetworkMonitor(page: Page): NetworkMonitor {
     });
   };
 
-  const onConsole = (msg: any) => {
+  const onConsole = (msg: ConsoleMessage) => {
     if (msg.type() !== 'error') {
       return;
     }

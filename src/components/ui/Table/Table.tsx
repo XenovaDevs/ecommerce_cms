@@ -1,21 +1,23 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, type ReactNode } from 'react'
 import { ArrowUpDown, ArrowUp, ArrowDown, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-export interface Column {
+type TableRow = object
+
+export interface Column<T extends TableRow = TableRow> {
   key: string
   header: string
   sortable?: boolean
-  render?: (value: any, row: any) => React.ReactNode
+  render?: (value: unknown, row: T) => ReactNode
   className?: string
 }
 
-interface TableProps {
-  columns: Column[]
-  data: any[]
+interface TableProps<T extends TableRow = TableRow> {
+  columns: Column<T>[]
+  data: T[]
   sortable?: boolean
   selectable?: boolean
-  onRowSelect?: (selectedRows: any[]) => void
+  onRowSelect?: (selectedRows: T[]) => void
   loading?: boolean
   emptyMessage?: string
   striped?: boolean
@@ -26,7 +28,28 @@ interface TableProps {
 
 type SortDirection = 'asc' | 'desc' | null
 
-export const Table = ({
+const getCellValue = <T extends TableRow>(row: T, key: string): unknown =>
+  (row as Record<string, unknown>)[key]
+
+const compareValues = (a: unknown, b: unknown): number => {
+  if (a === b) return 0
+
+  if (typeof a === 'number' && typeof b === 'number') {
+    return a > b ? 1 : -1
+  }
+
+  return String(a).localeCompare(String(b))
+}
+
+const renderCellFallback = (value: unknown): ReactNode => {
+  if (value === null || value === undefined) return '-'
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    return String(value)
+  }
+  return null
+}
+
+export const Table = <T extends TableRow>({
   columns,
   data,
   sortable = false,
@@ -38,7 +61,7 @@ export const Table = ({
   hoverable = true,
   stickyHeader = false,
   className,
-}: TableProps) => {
+}: TableProps<T>) => {
   const [sortColumn, setSortColumn] = useState<string | null>(null)
   const [sortDirection, setSortDirection] = useState<SortDirection>(null)
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set())
@@ -47,12 +70,10 @@ export const Table = ({
     if (!sortColumn || !sortDirection) return data
 
     return [...data].sort((a, b) => {
-      const aVal = a[sortColumn]
-      const bVal = b[sortColumn]
+      const aVal = getCellValue(a, sortColumn)
+      const bVal = getCellValue(b, sortColumn)
 
-      if (aVal === bVal) return 0
-
-      const comparison = aVal > bVal ? 1 : -1
+      const comparison = compareValues(aVal, bVal)
       return sortDirection === 'asc' ? comparison : -comparison
     })
   }, [data, sortColumn, sortDirection])
@@ -81,7 +102,16 @@ export const Table = ({
       newSelected.add(index)
     }
     setSelectedRows(newSelected)
-    onRowSelect?.(Array.from(newSelected).map((i) => sortedData[i]))
+
+    const selectedData: T[] = []
+    newSelected.forEach((selectedIndex) => {
+      const row = sortedData[selectedIndex]
+      if (row !== undefined) {
+        selectedData.push(row)
+      }
+    })
+
+    onRowSelect?.(selectedData)
   }
 
   const handleSelectAll = () => {
@@ -238,7 +268,12 @@ export const Table = ({
                   key={col.key}
                   className={cn('px-4 py-4 text-sm text-sage-900', col.className)}
                 >
-                  {col.render ? col.render(row[col.key], row) : row[col.key]}
+                  {(() => {
+                    const cellValue = getCellValue(row, col.key)
+                    return col.render
+                      ? col.render(cellValue, row)
+                      : renderCellFallback(cellValue)
+                  })()}
                 </td>
               ))}
             </tr>

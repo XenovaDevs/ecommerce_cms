@@ -6,7 +6,7 @@
  * Follows OCP: Extensible through props without modification.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useShipments } from '../hooks';
 import { ShippingStatus } from '../types/shipping.types';
 import type { Shipment } from '../types/shipping.types';

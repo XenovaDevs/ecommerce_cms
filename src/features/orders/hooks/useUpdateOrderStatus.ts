@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { orderService } from '../services/order.service'
 import { UpdateOrderStatusPayload } from '../types/order.types'
 import toast from 'react-hot-toast'
+import { parseErrorMessage } from '@/lib/utils'
 
 /**
  * Hook for updating order status
@@ -20,8 +21,9 @@ export function useUpdateOrderStatus() {
 
       toast.success('Order status updated successfully')
     },
-    onError: (error: any) => {
-      toast.error(error?.message || 'Failed to update order status')
+    onError: (error: unknown) => {
+      const message = parseErrorMessage(error)
+      toast.error(message === 'An unexpected error occurred' ? 'Failed to update order status' : message)
     },
   })
 }

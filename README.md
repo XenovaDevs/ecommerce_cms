@@ -25,6 +25,20 @@ pnpm dev
 
 Server runs on `http://localhost:3001`
 
+## Production Deployment (Static + Nginx)
+
+```bash
+# Optional if CMS runs in subpath (example: /cms/)
+set VITE_BASE_PATH=/cms/
+pnpm build
+```
+
+Deploy the generated `dist/` folder to Nginx root (for example `/var/www/ecommerce-cms/dist`) and configure:
+
+- `Cache-Control: public, max-age=31536000, immutable` for hashed assets
+- `Cache-Control: no-cache` for `index.html`
+- SPA fallback: `try_files $uri /index.html`
+
 ## Project Status
 
 ### ✅ Completed Phases

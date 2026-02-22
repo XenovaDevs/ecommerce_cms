@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react'
 import { authService } from '../services/auth.service'
 import { AuthContextType, LoginCredentials, AuthUser } from '../types/auth.types'
@@ -37,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         setUser(currentUser)
-      } catch (error) {
+      } catch {
         authService.clearTokens()
         setUser(null)
       } finally {

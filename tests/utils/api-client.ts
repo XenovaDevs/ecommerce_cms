@@ -2,7 +2,7 @@ import { expect, type APIRequest, type APIRequestContext, type APIResponse } fro
 import { API_ENDPOINTS } from '../../src/services/apiEndpoints';
 import { E2E_ENV } from './env';
 
-type AnyJson = Record<string, any>;
+type JsonObject = Record<string, unknown>;
 type RequestOptions = Parameters<APIRequestContext['get']>[1];
 
 export interface ApiClient {
@@ -14,19 +14,19 @@ export interface ApiClient {
   dispose: () => Promise<void>;
 }
 
-export async function readJson(response: APIResponse): Promise<AnyJson> {
+export async function readJson(response: APIResponse): Promise<JsonObject> {
   return response.json().catch(() => ({}));
 }
 
-export function unwrapData<T>(payload: AnyJson | undefined): T {
+export function unwrapData<T>(payload: JsonObject | undefined): T {
   if (!payload) {
-    return [] as unknown as T;
+    return {} as T;
   }
   return (payload.data ?? payload) as T;
 }
 
-export function unwrapList<T>(payload: AnyJson | undefined): T[] {
-  const unwrapped = unwrapData<any>(payload);
+export function unwrapList<T>(payload: JsonObject | undefined): T[] {
+  const unwrapped = unwrapData<unknown>(payload);
   if (Array.isArray(unwrapped)) {
     return unwrapped;
   }
@@ -71,7 +71,7 @@ export async function loginByApi(
   base: APIRequest,
   email = E2E_ENV.adminEmail,
   password = E2E_ENV.adminPassword
-): Promise<{ token: string; body: AnyJson; context: ApiClient }> {
+): Promise<{ token: string; body: JsonObject; context: ApiClient }> {
   const api = await newApiContext(base);
   let res: APIResponse | null = null;
 

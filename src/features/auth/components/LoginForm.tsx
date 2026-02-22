@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useLogin } from '../hooks/useLogin'
 import { LoginCredentials } from '../types/auth.types'
+import { parseErrorMessage } from '@/lib/utils'
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -61,7 +62,7 @@ export function LoginForm() {
       {error && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
           <p className="text-sm text-red-800">
-            {(error as any)?.response?.data?.message || 'Error al iniciar sesión'}
+            {parseErrorMessage(error)}
           </p>
         </div>
       )}

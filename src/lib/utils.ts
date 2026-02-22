@@ -24,7 +24,7 @@ export function formatCurrency(amount: number): string {
 /**
  * Format date to readable format
  */
-export function formatDate(date: string | Date, formatStr: string = 'dd/MM/yyyy'): string {
+export function formatDate(date: string | Date, formatStr = 'dd/MM/yyyy'): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date
   return format(dateObj, formatStr)
 }
@@ -48,13 +48,13 @@ export function truncate(text: string, maxLength: number): string {
 /**
  * Debounce function
  */
-export function debounce<T extends (...args: any[]) => any>(
-  func: T,
+export function debounce<TArgs extends unknown[]>(
+  func: (...args: TArgs) => void,
   wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null
+): (...args: TArgs) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null
 
-  return function executedFunction(...args: Parameters<T>) {
+  return (...args: TArgs) => {
     const later = () => {
       timeout = null
       func(...args)
@@ -71,7 +71,7 @@ export function debounce<T extends (...args: any[]) => any>(
  * Sleep for specified milliseconds
  */
 export function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 /**
@@ -97,26 +97,41 @@ export function formatFileSize(bytes: number): string {
 /**
  * Check if object is empty
  */
-export function isEmpty(obj: Record<string, any>): boolean {
+export function isEmpty(obj: Record<string, unknown>): boolean {
   return Object.keys(obj).length === 0
+}
+
+type ApiErrorShape = {
+  response?: {
+    data?: {
+      message?: unknown
+      error?: unknown
+    }
+  }
+  message?: unknown
 }
 
 /**
  * Parse error message from API response
  */
-export function parseErrorMessage(error: any): string {
+export function parseErrorMessage(error: unknown): string {
   if (typeof error === 'string') return error
 
-  if (error?.response?.data?.message) {
-    return error.response.data.message
-  }
+  if (error && typeof error === 'object') {
+    const apiError = error as ApiErrorShape
+    const responseMessage = apiError.response?.data?.message
+    if (typeof responseMessage === 'string' && responseMessage.length > 0) {
+      return responseMessage
+    }
 
-  if (error?.response?.data?.error) {
-    return error.response.data.error
-  }
+    const responseError = apiError.response?.data?.error
+    if (typeof responseError === 'string' && responseError.length > 0) {
+      return responseError
+    }
 
-  if (error?.message) {
-    return error.message
+    if (typeof apiError.message === 'string' && apiError.message.length > 0) {
+      return apiError.message
+    }
   }
 
   return 'An unexpected error occurred'
@@ -125,10 +140,10 @@ export function parseErrorMessage(error: any): string {
 /**
  * Convert query params to string
  */
-export function stringifyQueryParams(params: Record<string, any>): string {
+export function stringifyQueryParams(params: Record<string, unknown>): string {
   const filtered = Object.entries(params)
-    .filter(([_, value]) => value !== undefined && value !== null && value !== '')
-    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .filter(([, value]) => value !== undefined && value !== null && value !== '')
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
     .join('&')
 
   return filtered ? `?${filtered}` : ''

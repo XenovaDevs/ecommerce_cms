@@ -2,6 +2,10 @@ import apiClient, { setAuthTokens, clearAuthTokens } from '@/services/api'
 import { API_ENDPOINTS } from '@/services/apiEndpoints'
 import { LoginCredentials, LoginResponse, AuthUser } from '../types/auth.types'
 
+interface RefreshResponse {
+  access_token: string
+}
+
 export const authService = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     const { data } = await apiClient.post<LoginResponse>(API_ENDPOINTS.AUTH.LOGIN, credentials)
@@ -22,7 +26,7 @@ export const authService = {
   },
 
   async refreshAccessToken(): Promise<void> {
-    const { data } = await apiClient.post<any>(API_ENDPOINTS.AUTH.REFRESH, {})
+    const { data } = await apiClient.post<RefreshResponse>(API_ENDPOINTS.AUTH.REFRESH, {})
     setAuthTokens(data.access_token)
   },
 

@@ -99,7 +99,7 @@ export const FileUpload = ({
 
   const removeFile = (index: number) => {
     const fileToRemove = files[index]
-    if (fileToRemove.preview) {
+    if (fileToRemove?.preview) {
       URL.revokeObjectURL(fileToRemove.preview)
     }
 

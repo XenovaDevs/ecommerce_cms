@@ -4,15 +4,6 @@ import { z } from 'zod';
 import { Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useSettings } from '../hooks/useSettings';
@@ -32,7 +23,11 @@ export function GeneralSettings() {
   const { data, isLoading } = useSettings();
   const { mutate: updateSettings, isPending } = useUpdateSettings();
 
-  const form = useForm<GeneralSettingsFormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<GeneralSettingsFormValues>({
     resolver: zodResolver(generalSettingsSchema),
     values: data?.general,
   });
@@ -49,7 +44,7 @@ export function GeneralSettings() {
   }
 
   return (
-      <Card className="border-sage-gray-200">
+    <Card className="border-sage-gray-200">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-foreground">
           <Store className="h-5 w-5 text-gold-600" />
@@ -58,88 +53,51 @@ export function GeneralSettings() {
         <CardDescription>Manage your store's basic information</CardDescription>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="storeName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Store Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Le Pas Sage" {...field} />
-                  </FormControl>
-                  <FormDescription>The name of your store</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <Input
+            label="Store Name"
+            placeholder="Le Pas Sage"
+            error={errors.storeName?.message}
+            helperText="The name of your store"
+            {...register('storeName')}
+          />
 
-            <FormField
-              control={form.control}
-              name="storeEmail"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="store@example.com" {...field} />
-                  </FormControl>
-                  <FormDescription>Contact email for customer inquiries</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Input
+            label="Email"
+            type="email"
+            placeholder="store@example.com"
+            error={errors.storeEmail?.message}
+            helperText="Contact email for customer inquiries"
+            {...register('storeEmail')}
+          />
 
-            <FormField
-              control={form.control}
-              name="storePhone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone</FormLabel>
-                  <FormControl>
-                    <Input placeholder="+54 11 1234-5678" {...field} />
-                  </FormControl>
-                  <FormDescription>Contact phone number</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Input
+            label="Phone"
+            placeholder="+54 11 1234-5678"
+            error={errors.storePhone?.message}
+            helperText="Contact phone number"
+            {...register('storePhone')}
+          />
 
-            <FormField
-              control={form.control}
-              name="storeAddress"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Address</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Store address" {...field} />
-                  </FormControl>
-                  <FormDescription>Physical store address (optional)</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Textarea
+            label="Address"
+            placeholder="Store address"
+            error={errors.storeAddress?.message}
+            {...register('storeAddress')}
+          />
 
-            <FormField
-              control={form.control}
-              name="taxId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tax ID / CUIT</FormLabel>
-                  <FormControl>
-                    <Input placeholder="20-12345678-9" {...field} />
-                  </FormControl>
-                  <FormDescription>Tax identification number (optional)</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Input
+            label="Tax ID / CUIT"
+            placeholder="20-12345678-9"
+            error={errors.taxId?.message}
+            helperText="Tax identification number (optional)"
+            {...register('taxId')}
+          />
 
-            <Button type="submit" disabled={isPending}>
-              {isPending ? 'Saving...' : 'Save Changes'}
-            </Button>
-          </form>
-        </Form>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </form>
       </CardContent>
     </Card>
   );

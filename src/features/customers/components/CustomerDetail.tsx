@@ -43,7 +43,7 @@ export function CustomerDetail({ customer }: CustomerDetailProps) {
               <CardTitle>{customer.name}</CardTitle>
               <CardDescription>Información del cliente</CardDescription>
             </div>
-            <Badge variant={customer.is_active ? 'default' : 'secondary'}>
+            <Badge variant={customer.is_active ? 'default' : 'outline'}>
               {customer.is_active ? 'Activo' : 'Inactivo'}
             </Badge>
           </div>

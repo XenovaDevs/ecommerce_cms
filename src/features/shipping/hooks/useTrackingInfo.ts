@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { shippingService } from '../services/shipping.service';
 import { shipmentKeys } from './useShipments';
 import type { TrackingInfo } from '../types/shipping.types';
+import { parseErrorMessage } from '@/lib/utils';
 
 /**
  * Hook configuration options
@@ -47,13 +48,14 @@ export function useTrackingInfo(
 ): UseTrackingInfoReturn {
   const { shipmentId, enabled = true } = options;
 
-  const query = useQuery({
+  const query = useQuery<TrackingInfo, Error>({
     queryKey: shipmentKeys.tracking(shipmentId!),
     queryFn: () => shippingService.track(shipmentId!),
     enabled: enabled && shipmentId !== null,
     staleTime: 1000 * 60 * 2, // 2 minutes (tracking info updates frequently)
-    retry: (failureCount, error: any) => {
-      if (error.message?.includes('not available')) {
+    retry: (failureCount, error: unknown) => {
+      const message = parseErrorMessage(error);
+      if (message.includes('not available')) {
         return false;
       }
       return failureCount < 3;

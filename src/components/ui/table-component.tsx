@@ -1,6 +1,6 @@
 import { forwardRef, type HTMLAttributes, type ThHTMLAttributes, type TdHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
-import { Table as TableComponent, type Column } from './Table/Table'
+import { Table as TableComponent } from './Table/Table'
 
 export { type Column } from './Table/Table'
 

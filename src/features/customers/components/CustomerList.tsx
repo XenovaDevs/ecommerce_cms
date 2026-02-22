@@ -71,7 +71,7 @@ export function CustomerList({ customers }: CustomerListProps) {
               </TableCell>
               <TableCell className="text-center">
                 <Badge
-                  variant={customer.is_active ? 'default' : 'secondary'}
+                  variant={customer.is_active ? 'default' : 'outline'}
                 >
                   {customer.is_active ? 'Activo' : 'Inactivo'}
                 </Badge>

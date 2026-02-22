@@ -49,7 +49,7 @@ export const TabsContainer = ({
   )
 }
 
-interface TabsListProps extends HTMLAttributes<HTMLDivElement> {}
+type TabsListProps = HTMLAttributes<HTMLDivElement>
 
 export const TabsList = ({ children, className, ...props }: TabsListProps) => {
   return (

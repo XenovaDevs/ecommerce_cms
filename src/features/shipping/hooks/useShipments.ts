@@ -9,6 +9,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { shippingService } from '../services/shipping.service';
 import type { ShipmentListResponse } from '../types/shipping.types';
+import { parseErrorMessage } from '@/lib/utils';
 
 /**
  * Query key factory for shipments
@@ -56,14 +57,15 @@ interface UseShipmentsReturn {
 export function useShipments(options: UseShipmentsOptions = {}): UseShipmentsReturn {
   const { page = 1, perPage = 10, enabled = true } = options;
 
-  const query = useQuery({
+  const query = useQuery<ShipmentListResponse, Error>({
     queryKey: shipmentKeys.list(page, perPage),
     queryFn: () => shippingService.list(page, perPage),
     enabled,
     staleTime: 1000 * 60 * 5, // 5 minutes
-    retry: (failureCount, error: any) => {
+    retry: (failureCount, error: unknown) => {
       // Don't retry if endpoint doesn't exist (404)
-      if (error.message?.includes('not available yet')) {
+      const message = parseErrorMessage(error);
+      if (message.includes('not available yet')) {
         return false;
       }
       return failureCount < 3;

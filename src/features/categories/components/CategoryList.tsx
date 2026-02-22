@@ -39,7 +39,7 @@ export function CategoryList({ onEdit, onDelete, onCreate }: CategoryListProps) 
    */
   const flattenedCategories = flattenCategoryTree(categoryTree || [])
 
-  const columns: Column[] = [
+  const columns: Column<CategoryTreeNode>[] = [
     {
       key: 'name',
       header: 'Categoría',
@@ -63,9 +63,10 @@ export function CategoryList({ onEdit, onDelete, onCreate }: CategoryListProps) 
       key: 'description',
       header: 'Descripción',
       sortable: false,
-      render: (value) => (
-        <span className="text-sage-600 line-clamp-1">{value || '—'}</span>
-      ),
+      render: (value) => {
+        const description = typeof value === 'string' && value.length > 0 ? value : '—'
+        return <span className="text-sage-600 line-clamp-1">{description}</span>
+      },
     },
     {
       key: 'parent',
@@ -85,7 +86,7 @@ export function CategoryList({ onEdit, onDelete, onCreate }: CategoryListProps) 
       sortable: false,
       className: 'text-center',
       render: (value) => (
-        <span className="text-sage-600 font-mono text-sm">{value}</span>
+        <span className="text-sage-600 font-mono text-sm">{String(value ?? '—')}</span>
       ),
     },
     {
@@ -93,11 +94,14 @@ export function CategoryList({ onEdit, onDelete, onCreate }: CategoryListProps) 
       header: 'Estado',
       sortable: false,
       className: 'text-center',
-      render: (value) => (
-        <Badge variant={value ? 'success' : 'default'}>
-          {value ? 'Activo' : 'Inactivo'}
-        </Badge>
-      ),
+      render: (value) => {
+        const isActive = Boolean(value)
+        return (
+          <Badge variant={isActive ? 'success' : 'default'}>
+            {isActive ? 'Activo' : 'Inactivo'}
+          </Badge>
+        )
+      },
     },
     {
       key: 'actions',

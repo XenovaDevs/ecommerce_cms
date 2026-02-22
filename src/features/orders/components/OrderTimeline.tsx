@@ -20,9 +20,16 @@ interface OrderTimelineProps {
  * Open/Closed: Icon mapping can be extended without modifying component logic
  */
 export function OrderTimeline({ statusHistory }: OrderTimelineProps) {
+  const toOrderStatus = (status: string): OrderStatus => {
+    return (Object.values(OrderStatus) as string[]).includes(status)
+      ? (status as OrderStatus)
+      : OrderStatus.PENDING
+  }
+
   const getStatusIcon = (status: OrderStatus) => {
     const iconMap: Record<OrderStatus, React.ReactNode> = {
       [OrderStatus.PENDING]: <Clock className="w-5 h-5 text-yellow-600" />,
+      [OrderStatus.CONFIRMED]: <CheckCircle className="w-5 h-5 text-cyan-600" />,
       [OrderStatus.PROCESSING]: <Package className="w-5 h-5 text-blue-600" />,
       [OrderStatus.SHIPPED]: <Truck className="w-5 h-5 text-indigo-600" />,
       [OrderStatus.DELIVERED]: <CheckCircle className="w-5 h-5 text-green-600" />,
@@ -36,6 +43,7 @@ export function OrderTimeline({ statusHistory }: OrderTimelineProps) {
   const getStatusLabel = (status: OrderStatus) => {
     const labelMap: Record<OrderStatus, string> = {
       [OrderStatus.PENDING]: 'Order Pending',
+      [OrderStatus.CONFIRMED]: 'Order Confirmed',
       [OrderStatus.PROCESSING]: 'Processing Order',
       [OrderStatus.SHIPPED]: 'Order Shipped',
       [OrderStatus.DELIVERED]: 'Order Delivered',
@@ -68,17 +76,17 @@ export function OrderTimeline({ statusHistory }: OrderTimelineProps) {
                 <div className="relative flex items-start space-x-3">
                   <div className="relative">
                     <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center ring-4 ring-white">
-                      {getStatusIcon(event.status)}
+                      {getStatusIcon(toOrderStatus(event.status))}
                     </div>
                   </div>
                   <div className="min-w-0 flex-1">
                     <div>
                       <div className="text-sm font-medium text-gray-900">
-                        {getStatusLabel(event.status)}
+                        {getStatusLabel(toOrderStatus(event.status))}
                       </div>
                       <p className="mt-0.5 text-xs text-gray-500">
                         {formatDateTime(event.created_at)}
-                        {event.created_by && ` by ${event.created_by}`}
+                        {event.changed_by && ` by ${event.changed_by}`}
                       </p>
                     </div>
                     {event.notes && (

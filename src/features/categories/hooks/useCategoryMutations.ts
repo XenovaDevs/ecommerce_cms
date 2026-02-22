@@ -18,6 +18,12 @@ import { categoryService } from '../services/category.service'
 import { CategoryFormData } from '../types/category.types'
 import { useToast } from '@/store/ToastContext'
 import { categoryKeys } from './useCategories'
+import { parseErrorMessage } from '@/lib/utils'
+
+const getMutationErrorMessage = (error: unknown, fallback: string) => {
+  const parsedMessage = parseErrorMessage(error)
+  return parsedMessage === 'An unexpected error occurred' ? fallback : parsedMessage
+}
 
 /**
  * Hook for creating a new category
@@ -38,8 +44,8 @@ export function useCreateCategory() {
       queryClient.invalidateQueries({ queryKey: categoryKeys.all })
       showToast('Categoría creada exitosamente', 'success')
     },
-    onError: (error: any) => {
-      const message = error?.response?.data?.message || 'Error al crear la categoría'
+    onError: (error: unknown) => {
+      const message = getMutationErrorMessage(error, 'Error al crear la categoría')
       showToast(message, 'error')
     },
   })
@@ -67,8 +73,8 @@ export function useUpdateCategory() {
       queryClient.invalidateQueries({ queryKey: categoryKeys.detail(updatedCategory.id) })
       showToast('Categoría actualizada exitosamente', 'success')
     },
-    onError: (error: any) => {
-      const message = error?.response?.data?.message || 'Error al actualizar la categoría'
+    onError: (error: unknown) => {
+      const message = getMutationErrorMessage(error, 'Error al actualizar la categoría')
       showToast(message, 'error')
     },
   })
@@ -95,8 +101,8 @@ export function useDeleteCategory() {
       queryClient.removeQueries({ queryKey: categoryKeys.detail(deletedId) })
       showToast('Categoría eliminada exitosamente', 'success')
     },
-    onError: (error: any) => {
-      const message = error?.response?.data?.message || 'Error al eliminar la categoría'
+    onError: (error: unknown) => {
+      const message = getMutationErrorMessage(error, 'Error al eliminar la categoría')
       showToast(message, 'error')
     },
   })

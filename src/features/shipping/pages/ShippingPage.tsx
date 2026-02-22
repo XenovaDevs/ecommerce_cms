@@ -6,7 +6,7 @@
  * Follows OCP: Extensible by adding new tabs without modification to core logic.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ShipmentList, CreateShipmentForm, TrackingInfo } from '../components';
 import type { Shipment } from '../types/shipping.types';
 
